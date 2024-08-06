@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Filtragem de CSV</title>
+    <title>Capacidade de Empenho</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -24,9 +24,16 @@
     </style>
 </head>
 <body>
-    <h1>Filtragem de CSV</h1>
+    <h1>Capacidade de Empenho</h1>
+
+    <label for="ugSelect">Selecione UG:</label>
+    <select style="height: 30px;" id="ugSelect">
+        <option value="gerenciadora">UG Gerenciadora</option>
+        <option value="participante">UG Participante</option>
+    </select>
+
     <label for="tipoCompra">Tipo de Compra:</label>
-    <select id="tipoCompra" multiple></select>
+    <select style="height: 50px;" id="tipoCompra" multiple></select>
 
     <label for="numeroCompra">Número da Compra:</label>
     <select id="numeroCompra" multiple></select>
@@ -34,7 +41,7 @@
     <label for="fornecedor">Fornecedor:</label>
     <select id="fornecedor" multiple></select>
     
-    <label for="itens">Itens:</label>
+    <label for="itens">Número do Item - CATMAT - Descrição - Val. Unitário - Saldo para Empenho</label>
     <select id="itens" multiple></select>
 
     <div id="totalSaldoEmpenho">Total Saldo para Empenho: R$ 0,00</div>
@@ -56,6 +63,7 @@
             const tipoCompraSet = new Set();
             rows.forEach(row => tipoCompraSet.add(row[12]));
             const tipoCompraSelect = document.getElementById('tipoCompra');
+            tipoCompraSelect.innerHTML = '';
             tipoCompraSet.forEach(tipoCompra => {
                 const option = document.createElement('option');
                 option.value = tipoCompra;
@@ -103,7 +111,7 @@
             rows.forEach(row => {
                 if (selectedTipoCompras.includes(row[12]) && selectedNumeroCompras.includes(row[0]) && selectedFornecedores.includes(row[8])) {
                     const saldoParaEmpenho = parseFloat(row[10]) * parseFloat(row[9]);
-                    const item = `${row[1]} - ${row[2]} - ${saldoParaEmpenho.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+                    const item = `${row[1]} - ${row[2]} - R$ ${parseFloat(row[9]).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} - ${parseFloat(row[10])} ${row[17]}`;
                     itensSet.add(item);
                 }
             });
@@ -121,13 +129,20 @@
             let total = 0;
             rows.forEach(row => {
                 const saldoParaEmpenho = parseFloat(row[10]) * parseFloat(row[9]);
-                const item = `${row[1]} - ${row[2]} - ${saldoParaEmpenho.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+                const item = `${row[1]} - ${row[2]} - R$ ${parseFloat(row[9]).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} - ${parseFloat(row[10])} ${row[17]}`;
                 if (selectedItems.includes(item)) {
                     total += saldoParaEmpenho;
                 }
             });
             document.getElementById('totalSaldoEmpenho').textContent = `Total Saldo para Empenho: R$ ${total.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
         }
+
+        document.getElementById('ugSelect').addEventListener('change', function() {
+            const url = this.value === 'gerenciadora' ? 
+                'https://raw.githubusercontent.com/hermannvargens/webscrapping/main/df_itens_gerenciadora.csv' : 
+                'https://raw.githubusercontent.com/hermannvargens/webscrapping/main/df_itens_participante.csv';
+            loadData(url);
+        });
 
         document.getElementById('tipoCompra').addEventListener('change', function() {
             const selectedTipoCompras = Array.from(this.selectedOptions).map(option => option.value);
@@ -173,8 +188,7 @@
 
         let parsedData = null;
 
-        document.addEventListener('DOMContentLoaded', async () => {
-            const url = 'https://raw.githubusercontent.com/hermannvargens/webscrapping/main/df_itens_gerenciadora.csv';
+        async function loadData(url) {
             const csvData = await fetchCSV(url);
             parsedData = parseCSV(csvData);
             // Adiciona coluna "Saldo para Empenho" e "Itens" aos dados
@@ -186,6 +200,10 @@
             parsedData.headers.push('Saldo para Empenho');
             parsedData.headers.push('Itens');
             populateTipoCompraOptions(parsedData.rows);
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('ugSelect').dispatchEvent(new Event('change'));
         });
     </script>
 </body>
