@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Compras Parque/5</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+        }
+
+
+
+        .sidebar {
+            width: 300px;
+            background-color: #2c3e50;
+            color: white;
+            padding: 15px;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+
+        .sidebar a {
+            color: white;
+            text-decoration: none;
+            display: block;
+            padding: 10px 0;
+            text-align: center;
+            width: 100%;
+        }
+        .sidebar a:hover {
+            background-color: #34495e;
+        }
+
+        .colunas {
+            margin-left: 0px;
+            padding: 0px;
+            flex-grow: 1;
+            margin-top: 0px;
+        }
+
+        .content {
+            margin-left: 350px;
+            padding: 20px;
+            flex-grow: 1;
+            margin-top: 100px;
+            
+        }
+
+
+
+        .hidden {
+            display: none;
+        }
+        .header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background-color: #ffffff;
+            z-index: 1000;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        h2 {
+            color: #333;
+        }
+ 
+        .link {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+            font-size: 20px;
+            
+        }
+
+        .link:hover{
+            opacity: 0.8;
+        }
+
+        .link a{
+          text-decoration: none;
+          color: white;
+          
+        }
+
+
+
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <a href="#" onclick="showContent('home')">Início</a>
+        <a href="#" onclick="showContent('gerarRequisicao')">Gerar Requisições</a>
+        <a href="http://intranet.pqrmnt5.eb.mil.br/requisicoes/Consultar-Itens-Tabela.html">Consultar Itens em Tabela</a> 
+        <a href="http://intranet.pqrmnt5.eb.mil.br/requisicoes/Gerador-de-Requisicoes - Capacidade de Empenho.html" >Consultar Capacidade de Empenho</a>
+        
+
+<br>
+<br>
+<br>
+<br>
+<p> Visitante Número:</p>
+<!-- hitwebcounter Code START -->
+<a href="https://www.hitwebcounter.com" target="_blank">
+  <img src="https://hitwebcounter.com/counter/counter.php?page=15296573&style=0030&nbdigits=5&type=page&initCount=0" title="Counter Widget" Alt="Visit counter For Websites"   border="0" /></a>        
+
+
+
+    </div>
+    <div class="content">
+        <div id="home">
+            <div class="header">
+                        <h1>Início</h1>
+            </div>
+                <p>Esta página visa auxiliar na montagem de requisições, e consultas às informações de pregões.</p>
+        </div>
+
+        <div id="gerarRequisicao">
+          <div class="header">
+                      <h1>Gerar Requisições</h1>
+          </div>
+          <button class = 'link'><a href="http://intranet.pqrmnt5.eb.mil.br/requisicoes/Gerador-de-Requisicoes - Gerenciadora.html">Unidade Gestora Gerenciadora (UGG)</a></button>
+        </br>
+          <button class = 'link'><a href="http://intranet.pqrmnt5.eb.mil.br/requisicoes/Gerador-de-Requisicoes - Participante.html" >Unidade Gestora Participante (UGP)</a></button>
+      </br>
+          <button class = 'link'><a href="http://intranet.pqrmnt5.eb.mil.br/requisicoes/Gerador-de-Requisições - Carona.html" >Unidade Gestora Não Participante (UGNP - Carona)</a></button>
+      </div>
+
+      <div id="consultarItens">
+        <div class="header">
+                    <h1>Consultar Itens</h1>
+        </div>
+        <button class = 'link'><a href="http://intranet.pqrmnt5.eb.mil.br/requisicoes/Consultar-Itens-Tabela.html">Consulta de itens por tabela</a></button>
+        <br>
+        <button class = 'link'><a href="https://lookerstudio.google.com/s/tUCMCwhsjfA" >Consulta de itens por dashboard - Capacidade de Empenho</a></button>
+    
+    </div>
+  </div>
+  
+    
+
+               
+
+
+
+
+
+    <script>
+        function showContent(contentId) {
+            const contents = document.querySelectorAll('.content > div');
+            contents.forEach(content => {
+                content.classList.add('hidden');
+            });
+            document.getElementById(contentId).classList.remove('hidden');
+        }
+
+        // Exibir a primeira seção por padrão
+        showContent('home');
+
+        let csvData = []; // Armazena os dados do CSV
+
+// Função para ler e processar o arquivo CSV
+function readCSVFromURL(url, callback) {
+  fetch(url)
+    .then(response => response.text())
+    .then(data => callback(data))
+    .catch(error => console.error('Erro ao ler o CSV:', error));
+}
+
+// Função para criar a tabela com os dados CSV
+function createTable(data) {
+  var table = document.getElementById("csvTable");
+  table.innerHTML = "";
+
+  // Criar uma primeira linha vazia para os filtros
+  var filterRow = table.insertRow();
+  for (var i = 0; i < data[0].length; i++) {
+    var cell = filterRow.insertCell();
+    var input = document.createElement("input");
+    input.type = "text";
+    input.placeholder = data[0][i];
+    input.name = "filter_" + data[0][i];
+    input.addEventListener("input", applyFilters);
+    cell.appendChild(input);
+  }
+
+  for (var i = 0; i < data.length; i++) {
+    var row = table.insertRow();
+    var rowData = data[i];
+    for (var j = 0; j < rowData.length; j++) {
+      var cell = row.insertCell();
+      cell.innerHTML = rowData[j];
+      if (i === 0) {
+        cell.style.fontWeight = "bold";
+      }
+    }
+  }
+
+  // Preencher o formulário de checkboxes no sidebar com o nome das colunas
+  var columnsForm = document.getElementById("columnsForm");
+  columnsForm.innerHTML = "";
+  for (var i = 0; i < data[0].length; i++) {
+    var input = document.createElement("input");
+    input.type = "checkbox";
+    input.value = i;
+    input.checked = true; // Colunas exibidas por padrão
+    input.addEventListener("change", toggleColumn);
+    var label = document.createElement("label");
+    label.textContent = data[0][i];
+    columnsForm.appendChild(input);
+    columnsForm.appendChild(label);
+    columnsForm.appendChild(document.createElement("br"));
+  }
+}
+
+// Função para carregar os dados do site selecionado
+function loadSiteData() {
+  var siteSelect = document.getElementById("siteSelect");
+  var selectedSite = siteSelect.value;
+
+  if (selectedSite === "site1") {
+    var url = "https://raw.githubusercontent.com/hermannvargens/webscrapping/main/df_itens_gerenciadora.csv";
+    readCSVFromURL(url, function (data) {
+      csvData = parseCSV(data);
+      createTable(csvData);
+    });
+  } else if (selectedSite === "site2") {
+    var url = "https://raw.githubusercontent.com/hermannvargens/webscrapping/main/df_itens_participante.csv";
+    readCSVFromURL(url, function (data) {
+      csvData = parseCSV(data);
+      createTable(csvData);
+    });
+  }
+}
+
+// Função para fazer o parse dos dados CSV
+function parseCSV(csvData) {
+  var lines = csvData.split("\n");
+  var parsedData = [];
+
+  for (var i = 0; i < lines.length; i++) {
+    var cells = lines[i].split(";");
+    parsedData.push(cells);
+  }
+
+  return parsedData;
+}
+
+// Função para aplicar os filtros na tabela
+function applyFilters() {
+  var filterInputs = document.querySelectorAll("#csvTable tr:first-child input[type='text']");
+  var tableRows = document.querySelectorAll("#csvTable tr");
+  for (var i = 1; i < tableRows.length; i++) {
+    var row = tableRows[i];
+    var showRow = true;
+    for (var j = 0; j < filterInputs.length; j++) {
+      var columnName = filterInputs[j].name.split("filter_")[1];
+      var filterValue = filterInputs[j].value.toLowerCase();
+      var cellValue = row.cells[j].innerText.toLowerCase();
+      if (cellValue.indexOf(filterValue) === -1) {
+        showRow = false;
+        break;
+      }
+    }
+    row.style.display = showRow ? "" : "none";
+  }
+}
+
+// Função para ocultar/ exibir colunas da tabela
+function toggleColumn(event) {
+  var columnIndex = parseInt(event.target.value);
+  var tableRows = document.querySelectorAll("#csvTable tr");
+
+  for (var i = 0; i < tableRows.length; i++) {
+    var row = tableRows[i];
+    var cell = row.cells[columnIndex];
+    cell.style.display = event.target.checked ? "" : "none";
+  }
+}
+
+
+    </script>
+</body>
+</html>

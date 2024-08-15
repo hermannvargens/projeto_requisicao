@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Capacidade de Empenho</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        select {
+            padding: 5px;
+            margin: 10px 0;
+            display: block;
+            height: 150px; /* altura ajustada para múltipla seleção */
+        }
+        #totalSaldoEmpenho {
+            font-size: 20px;
+            font-weight: bold;
+            margin-top: 20px;
+            float: right;
+        }
+    </style>
+</head>
+<body>
+    <h1>Capacidade de Empenho</h1>
+
+    <label for="ugSelect">Selecione UG:</label>
+    <select style="height: 30px;" id="ugSelect">
+        <option value="gerenciadora">UG Gerenciadora</option>
+        <option value="participante">UG Participante</option>
+    </select>
+
+    <label for="tipoCompra">Tipo de Compra:</label>
+    <select style="height: 50px;" id="tipoCompra" multiple></select>
+
+    <label for="numeroCompra">Número da Compra:</label>
+    <select id="numeroCompra" multiple></select>
+    
+    <label for="fornecedor">Fornecedor:</label>
+    <select id="fornecedor" multiple></select>
+    
+    <label for="itens">Número do Item - CATMAT - Descrição - Val. Unitário - Saldo para Empenho</label>
+    <select id="itens" multiple></select>
+
+    <div id="totalSaldoEmpenho">Total Saldo para Empenho: R$ 0,00</div>
+
+    <script>
+        async function fetchCSV(url) {
+            const response = await fetch(url);
+            const data = await response.text();
+            return data;
+        }
+
+        function parseCSV(data, delimiter = ';') {
+            const rows = data.split('\n').map(row => row.split(delimiter));
+            const headers = rows.shift();
+            return { headers, rows };
+        }
+
+        function populateTipoCompraOptions(rows) {
+            const tipoCompraSet = new Set();
+            rows.forEach(row => tipoCompraSet.add(row[12]));
+            const tipoCompraSelect = document.getElementById('tipoCompra');
+            tipoCompraSelect.innerHTML = '';
+            tipoCompraSet.forEach(tipoCompra => {
+                const option = document.createElement('option');
+                option.value = tipoCompra;
+                option.textContent = tipoCompra;
+                tipoCompraSelect.appendChild(option);
+            });
+        }
+
+        function populateNumeroCompraOptions(rows, selectedTipoCompras) {
+            const numeroCompraSet = new Set();
+            rows.forEach(row => {
+                if (selectedTipoCompras.includes(row[12])) {
+                    numeroCompraSet.add(row[0]);
+                }
+            });
+            const numeroCompraSelect = document.getElementById('numeroCompra');
+            numeroCompraSelect.innerHTML = '';
+            numeroCompraSet.forEach(numeroCompra => {
+                const option = document.createElement('option');
+                option.value = numeroCompra;
+                option.textContent = numeroCompra;
+                numeroCompraSelect.appendChild(option);
+            });
+        }
+
+        function populateFornecedorOptions(rows, selectedTipoCompras, selectedNumeroCompras) {
+            const fornecedorSet = new Set();
+            rows.forEach(row => {
+                if (selectedTipoCompras.includes(row[12]) && selectedNumeroCompras.includes(row[0])) {
+                    fornecedorSet.add(row[8]);
+                }
+            });
+            const fornecedorSelect = document.getElementById('fornecedor');
+            fornecedorSelect.innerHTML = '';
+            fornecedorSet.forEach(fornecedor => {
+                const option = document.createElement('option');
+                option.value = fornecedor;
+                option.textContent = fornecedor;
+                fornecedorSelect.appendChild(option);
+            });
+        }
+
+        function populateItensOptions(rows, selectedTipoCompras, selectedNumeroCompras, selectedFornecedores) {
+            const itensSet = new Set();
+            rows.forEach(row => {
+                if (selectedTipoCompras.includes(row[12]) && selectedNumeroCompras.includes(row[0]) && selectedFornecedores.includes(row[8])) {
+                    const saldoParaEmpenho = parseFloat(row[10]) * parseFloat(row[9]);
+                    const item = `${row[1]} - ${row[2]} - R$ ${parseFloat(row[9]).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} - ${parseFloat(row[10])} ${row[17]}`;
+                    itensSet.add(item);
+                }
+            });
+            const itensSelect = document.getElementById('itens');
+            itensSelect.innerHTML = '';
+            itensSet.forEach(item => {
+                const option = document.createElement('option');
+                option.value = item;
+                option.textContent = item;
+                itensSelect.appendChild(option);
+            });
+        }
+
+        function updateTotalSaldoEmpenho(rows, selectedItems) {
+            let total = 0;
+            rows.forEach(row => {
+                const saldoParaEmpenho = parseFloat(row[10]) * parseFloat(row[9]);
+                const item = `${row[1]} - ${row[2]} - R$ ${parseFloat(row[9]).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} - ${parseFloat(row[10])} ${row[17]}`;
+                if (selectedItems.includes(item)) {
+                    total += saldoParaEmpenho;
+                }
+            });
+            document.getElementById('totalSaldoEmpenho').textContent = `Total Saldo para Empenho: R$ ${total.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+        }
+
+        document.getElementById('ugSelect').addEventListener('change', function() {
+            const url = this.value === 'gerenciadora' ? 
+                'https://raw.githubusercontent.com/hermannvargens/webscrapping/main/df_itens_gerenciadora.csv' : 
+                'https://raw.githubusercontent.com/hermannvargens/webscrapping/main/df_itens_participante.csv';
+            loadData(url);
+        });
+
+        document.getElementById('tipoCompra').addEventListener('change', function() {
+            const selectedTipoCompras = Array.from(this.selectedOptions).map(option => option.value);
+            if (selectedTipoCompras.length > 0) {
+                populateNumeroCompraOptions(parsedData.rows, selectedTipoCompras);
+                document.getElementById('numeroCompra').dispatchEvent(new Event('change'));
+            } else {
+                document.getElementById('numeroCompra').innerHTML = '';
+                document.getElementById('fornecedor').innerHTML = '';
+                document.getElementById('itens').innerHTML = '';
+            }
+        });
+
+        document.getElementById('numeroCompra').addEventListener('change', function() {
+            const selectedTipoCompras = Array.from(document.getElementById('tipoCompra').selectedOptions).map(option => option.value);
+            const selectedNumeroCompras = Array.from(this.selectedOptions).map(option => option.value);
+            if (selectedNumeroCompras.length > 0) {
+                populateFornecedorOptions(parsedData.rows, selectedTipoCompras, selectedNumeroCompras);
+                document.getElementById('fornecedor').dispatchEvent(new Event('change'));
+            } else {
+                document.getElementById('fornecedor').innerHTML = '';
+                document.getElementById('itens').innerHTML = '';
+            }
+        });
+
+        document.getElementById('fornecedor').addEventListener('change', function() {
+            const selectedTipoCompras = Array.from(document.getElementById('tipoCompra').selectedOptions).map(option => option.value);
+            const selectedNumeroCompras = Array.from(document.getElementById('numeroCompra').selectedOptions).map(option => option.value);
+            const selectedFornecedores = Array.from(this.selectedOptions).map(option => option.value);
+            if (selectedFornecedores.length > 0) {
+                populateItensOptions(parsedData.rows, selectedTipoCompras, selectedNumeroCompras, selectedFornecedores);
+                document.getElementById('itens').dispatchEvent(new Event('change'));
+            } else {
+                document.getElementById('itens').innerHTML = '';
+                document.getElementById('totalSaldoEmpenho').textContent = 'Total Saldo para Empenho: R$ 0,00';
+            }
+        });
+
+        document.getElementById('itens').addEventListener('change', function() {
+            const selectedItems = Array.from(this.selectedOptions).map(option => option.value);
+            updateTotalSaldoEmpenho(parsedData.rows, selectedItems);
+        });
+
+        let parsedData = null;
+
+        async function loadData(url) {
+            const csvData = await fetchCSV(url);
+            parsedData = parseCSV(csvData);
+            // Adiciona coluna "Saldo para Empenho" e "Itens" aos dados
+            parsedData.rows.forEach(row => {
+                const saldoParaEmpenho = parseFloat(row[10]) * parseFloat(row[9]);
+                row.push(saldoParaEmpenho.toFixed(2));
+                row.push(`${row[1]} - ${row[2]} - ${saldoParaEmpenho.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`);
+            });
+            parsedData.headers.push('Saldo para Empenho');
+            parsedData.headers.push('Itens');
+            populateTipoCompraOptions(parsedData.rows);
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('ugSelect').dispatchEvent(new Event('change'));
+        });
+    </script>
+</body>
+</html>

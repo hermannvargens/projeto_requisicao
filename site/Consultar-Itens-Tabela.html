@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+  <title>Consulta de Itens</title>
+  <style>
+    body {
+      display: flex;
+      flex-direction: row;
+      justify-content: flex-start;
+    }
+
+    .content {
+      width: 80%;
+      padding: 20px;
+    }
+
+    table {
+      border-collapse: collapse;
+      width: 100%;
+    }
+
+    th, td {
+      border: 1px solid black;
+      padding: 8px;
+      text-align: left;
+    }
+
+    .sidebar {
+      width: 20%;
+      background-color: #f1f1f1;
+      padding: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="sidebar">
+    <h2>Colunas</h2>
+    <form id="columnsForm"></form>
+  </div>
+
+  <div class="content">
+    <h1>Consulta de Itens e Pregões em Forma de Tabela</h1>
+	<p>Aqui estão todos os itens, inclusive com saldo zerado e sem data de vigência.</p>
+    <label for="siteSelect">Selecione a Fonte dos Dados:</label>
+    <select id="siteSelect" onchange="loadSiteData()">
+      <option value="">Selecione...</option>
+      <option value="site1">Gerenciadora</option>
+      <option value="site2">Participante</option>
+    </select>
+    <br><br>
+    <table id="csvTable">
+      <!-- Tabela será preenchida dinamicamente -->
+    </table>
+  </div>
+
+  <script>
+    let csvData = []; // Armazena os dados do CSV
+
+    // Função para ler e processar o arquivo CSV
+    function readCSVFromURL(url, callback) {
+      fetch(url)
+        .then(response => response.text())
+        .then(data => callback(data))
+        .catch(error => console.error('Erro ao ler o CSV:', error));
+    }
+
+    // Função para criar a tabela com os dados CSV
+    function createTable(data) {
+      var table = document.getElementById("csvTable");
+      table.innerHTML = "";
+
+      // Criar uma primeira linha vazia para os filtros
+      var filterRow = table.insertRow();
+      for (var i = 0; i < data[0].length; i++) {
+        var cell = filterRow.insertCell();
+        var input = document.createElement("input");
+        input.type = "text";
+        input.placeholder = data[0][i];
+        input.name = "filter_" + data[0][i];
+        input.addEventListener("input", applyFilters);
+        cell.appendChild(input);
+      }
+
+      for (var i = 0; i < data.length; i++) {
+        var row = table.insertRow();
+        var rowData = data[i];
+        for (var j = 0; j < rowData.length; j++) {
+          var cell = row.insertCell();
+          cell.innerHTML = rowData[j];
+          if (i === 0) {
+            cell.style.fontWeight = "bold";
+          }
+        }
+      }
+
+      // Preencher o formulário de checkboxes no sidebar com o nome das colunas
+      var columnsForm = document.getElementById("columnsForm");
+      columnsForm.innerHTML = "";
+      for (var i = 0; i < data[0].length; i++) {
+        var input = document.createElement("input");
+        input.type = "checkbox";
+        input.value = i;
+        input.checked = true; // Colunas exibidas por padrão
+        input.addEventListener("change", toggleColumn);
+        var label = document.createElement("label");
+        label.textContent = data[0][i];
+        columnsForm.appendChild(input);
+        columnsForm.appendChild(label);
+        columnsForm.appendChild(document.createElement("br"));
+      }
+    }
+
+    // Função para carregar os dados do site selecionado
+    function loadSiteData() {
+      var siteSelect = document.getElementById("siteSelect");
+      var selectedSite = siteSelect.value;
+
+      if (selectedSite === "site1") {
+        var url = "https://raw.githubusercontent.com/hermannvargens/projeto_requisicao/main/df_itens_gerenciadora.csv";
+        readCSVFromURL(url, function (data) {
+          csvData = parseCSV(data);
+          createTable(csvData);
+        });
+      } else if (selectedSite === "site2") {
+        var url = "https://raw.githubusercontent.com/hermannvargens/webscrapping/main/df_itens_participante.csv";
+        readCSVFromURL(url, function (data) {
+          csvData = parseCSV(data);
+          createTable(csvData);
+        });
+      }
+    }
+
+    // Função para fazer o parse dos dados CSV
+    function parseCSV(csvData) {
+      var lines = csvData.split("\n");
+      var parsedData = [];
+
+      for (var i = 0; i < lines.length; i++) {
+        var cells = lines[i].split(";");
+        parsedData.push(cells);
+      }
+
+      return parsedData;
+    }
+
+    // Função para aplicar os filtros na tabela
+    function applyFilters() {
+      var filterInputs = document.querySelectorAll("#csvTable tr:first-child input[type='text']");
+      var tableRows = document.querySelectorAll("#csvTable tr");
+      for (var i = 1; i < tableRows.length; i++) {
+        var row = tableRows[i];
+        var showRow = true;
+        for (var j = 0; j < filterInputs.length; j++) {
+          var columnName = filterInputs[j].name.split("filter_")[1];
+          var filterValue = filterInputs[j].value.toLowerCase();
+          var cellValue = row.cells[j].innerText.toLowerCase();
+          if (cellValue.indexOf(filterValue) === -1) {
+            showRow = false;
+            break;
+          }
+        }
+        row.style.display = showRow ? "" : "none";
+      }
+    }
+
+    // Função para ocultar/ exibir colunas da tabela
+    function toggleColumn(event) {
+      var columnIndex = parseInt(event.target.value);
+      var tableRows = document.querySelectorAll("#csvTable tr");
+
+      for (var i = 0; i < tableRows.length; i++) {
+        var row = tableRows[i];
+        var cell = row.cells[columnIndex];
+        cell.style.display = event.target.checked ? "" : "none";
+      }
+    }
+  </script>
+</body>
+</html>
