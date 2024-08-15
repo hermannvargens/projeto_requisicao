@@ -21,7 +21,7 @@ def salvar_arquivo_tratado(df_itens, nome_arquivo):
 def salvar_itens_github(nome_arquivo_local):
         
     # Token de acesso pessoal do GitHub
-    ACCESS_TOKEN = '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'
+    ACCESS_TOKEN = 'TOKEN'
     
     # Nome do repositório (formato: 'usuario/repositorio')
     REPO_NAME = 'hermannvargens/projeto_requisicao'
