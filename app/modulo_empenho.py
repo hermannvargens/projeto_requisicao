@@ -8,14 +8,47 @@ import numpy as np
 import requests
 from bs4 import BeautifulSoup
 
-def obter_empenhos_SAG(): #essa função entra no SAG, obtém as tabelas de dados dos empenhos, e grava um arquivo CSV 'dados_empenho_tratado.csv'
+
+def obter_empenhos_SAG(): # esta função obtem os dados do ano vigente e do ano atual de empenhos. Quando mudar o ano, basta mudar o parâmetro "ano"
+
+    #define credenciais para login
 
     CPF = input("Digite o Login no SAG:")
     SENHA = input("Digite a senha do SAG:")
 
+    #obter dados
+    
+    ano = "sag2024/"
+
+    df_ano_anterior = obter_empenhos(CPF, SENHA, ano)
+
+    ano = ""
+    
+    df_ano_atual = obter_empenhos(CPF, SENHA, ano)
+    
+
+    df = pd.concat([df_ano_anterior, df_ano_atual], ignore_index=True)
+
+
+    #salvar arquivo com os dados de empenhos
+    
+    df.to_csv("dados_empenho_tratado.csv", sep=';', encoding='utf-8', index=False)
+
+    print('Arquivo dados_empenho_tratado.csv salvo com sucesso!')
+
+    
+
+    
+
+
+def obter_empenhos(CPF, SENHA, ano=""): #essa função entra no SAG, obtém as tabelas de dados dos empenhos, e grava um arquivo CSV 'dados_empenho_tratado.csv')
+
+
+
     print('Abrindo SAG...')
 
-    url = "https://sag.eb.mil.br/index.php"
+    url = "https://sag.eb.mil.br/" + ano + "index.php"
+    #url = "https://sag.eb.mil.br/sag2024/index.php"
 
     options = webdriver.ChromeOptions()
     options.add_argument('--headless')
@@ -50,7 +83,8 @@ def obter_empenhos_SAG(): #essa função entra no SAG, obtém as tabelas de dado
 
     print('Abrindo página de empenhos no SAG...')
     
-    driver.get('https://sag.eb.mil.br/php/docNeuq1.php')
+    driver.get("https://sag.eb.mil.br/" + ano + "php/docNeuq1.php")
+    #driver.get('https://sag.eb.mil.br/sag2024/php/docNeuq1.php')
     time.sleep(3)
     
     # Localizar o botão "EXIBIR FILTROS" pelo ID
@@ -166,7 +200,4 @@ def obter_empenhos_SAG(): #essa função entra no SAG, obtém as tabelas de dado
     df['Número do Item'] = df['OBS_LI'].str.split(' ').str[2]
     df = df[['UASG','Número do Pregão','Ano do Pregão','Número do Item', 'QUANTIDADE']]
 
-    df.to_csv('dados_empenho_tratado.csv', sep=';', encoding='utf-8', index=False)
-
-    print('Arquivo dados_empenho_tratado.csv salvo com sucesso!')
-
+    return df
