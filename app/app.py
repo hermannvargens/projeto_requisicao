@@ -427,6 +427,8 @@ def calcular_saldo_gerar_arquivo_final():
     df_qtd['Número do Pregão'] = df_qtd['Número do Pregão'].astype(str)
     df_qtd['Ano do Pregão'] = df_qtd['Ano do Pregão'].astype(str)
     df_qtd['Número do Item'] = df_qtd['Número do Item'].astype(str)
+    df_qtd['QUANTIDADE'] = df_qtd['QUANTIDADE'].str.replace(',','.')
+    df_qtd['QUANTIDADE'] = df_qtd['QUANTIDADE'].astype(float)    
     df_qtd['key'] = df_qtd['UASG'] + "_"+ df_qtd['Número do Pregão'] + "_"+ df_qtd['Ano do Pregão'] + "_"+ df_qtd['Número do Item']
     df_qtd = df_qtd.groupby('key', as_index=False)['QUANTIDADE'].sum()
 
@@ -500,10 +502,10 @@ def iniciar():
                 print("O arquivo 'df_itens_gerenciadora.csv' não foi encontrado.")
         
         elif opcao == "3":
-            UASG = input("Digite o número da UASG:")
-            num_licitacao = input("Digite o número da licitação:")
-            ano_licitacao = input("Digite o ano da licitação:")
-            fim_vigencia = input("Digite o Fim da Vigência (DD/MM/AAAA):")
+            UASG = input("Digite o número da UASG: ")
+            num_licitacao = input("Digite o número da licitação: ")
+            ano_licitacao = input("Digite o ano da licitação: ")
+            fim_vigencia = input("Digite o Fim da Vigência (DD/MM/AAAA): ")
 
             linhas = obter_dados(UASG, num_licitacao, ano_licitacao, fim_vigencia)
             df_itens_gerenciadora_novo = gerar_df(linhas, fim_vigencia)
