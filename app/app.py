@@ -412,7 +412,8 @@ def gerar_df(linhas, fim_vigencia):
 def calcular_saldo_gerar_arquivo_final():
     
     #Ler o arquivo de dados dos itens dos pregoes
-    df_itens_gerenciadora = pd.read_csv('df_itens_gerenciadora.csv',sep=';')
+    #df_itens_gerenciadora = pd.read_csv('df_itens_gerenciadora.csv',sep=';')#substituído pela linha abaixo
+    df_itens_gerenciadora = pd.read_csv('df_itens.csv',sep=';')
     df_itens_gerenciadora['UG'] = df_itens_gerenciadora['Unidade'].str[:6]
     df_itens_gerenciadora['UG'] = df_itens_gerenciadora['UG'].astype(str)
     df_itens_gerenciadora['Número do Pregão'] = df_itens_gerenciadora['Número do Pregão'].astype(str)
@@ -461,7 +462,8 @@ def calcular_saldo_gerar_arquivo_final():
     #Salvando o df final
     df_itens_gerenciadora['Número do Item'] = df_itens_gerenciadora['Número do Item'].astype(int)
     df_itens_gerenciadora = df_itens_gerenciadora.sort_values(['Número da Compra','Número do Pregão','Número do Item'])
-    df_itens_gerenciadora.to_csv('df_itens_gerenciadora.csv', sep=';', encoding='utf-8', index=False)
+    #df_itens_gerenciadora.to_csv('df_itens_gerenciadora.csv', sep=';', encoding='utf-8', index=False) #substituído pela linha abaixo
+    df_itens_gerenciadora.to_csv('df_itens.csv', sep=';', encoding='utf-8', index=False)
 
     return df_itens_gerenciadora
 
@@ -475,7 +477,8 @@ def iniciar():
         if opcao == "1":
 
             # Verifica se o arquivo existe
-            if os.path.exists('df_itens_gerenciadora.csv'):
+            #if os.path.exists('df_itens_gerenciadora.csv'): #substituído pela linha abaixo
+            if os.path.exists('df_itens.csv'):
                 
                 # Opção para atualizar o saldo
                 try:
@@ -486,12 +489,12 @@ def iniciar():
                     print("Erro ao atualizar o saldo:", e)
                 
             else:
-                print(f'O arquivo "{'df_itens_gerenciadora.csv'}" não existe.')
+                print(f'O arquivo "{'df_itens.csv'}" não existe.')
  
         elif opcao == "2":
             # Opção para exibir os valores únicos de 'Número da Compra'
             try:
-                df_itens_gerenciadora = pd.read_csv('df_itens_gerenciadora.csv', sep=';', encoding='utf-8')
+                df_itens_gerenciadora = pd.read_csv('df_itens.csv', sep=';', encoding='utf-8')
                 
                 # Exibir os valores únicos da coluna 'Número da Compra'
                 valores_unicos = df_itens_gerenciadora['Número da Compra'].unique()
@@ -499,7 +502,7 @@ def iniciar():
                 for valor in valores_unicos:
                     print(valor)
             except FileNotFoundError:
-                print("O arquivo 'df_itens_gerenciadora.csv' não foi encontrado.")
+                print("O arquivo 'df_itens.csv' não foi encontrado.")
         
         elif opcao == "3":
             UASG = input("Digite o número da UASG: ")
@@ -515,17 +518,17 @@ def iniciar():
 
             try:
                 df_itens_gerenciadora_novo = pd.read_csv('df_itens_gerenciadora_novo.csv', sep=';', encoding='utf-8')
-                df_itens_gerenciadora_antigo = pd.read_csv('df_itens_gerenciadora.csv', sep=';', encoding='utf-8')
+                df_itens_gerenciadora_antigo = pd.read_csv('df_itens.csv', sep=';', encoding='utf-8')
                 df_itens_gerenciadora = pd.concat([df_itens_gerenciadora_novo, df_itens_gerenciadora_antigo])
                 
                 # Ordenar dados
                 df_itens_gerenciadora = df_itens_gerenciadora.sort_values(['Número do Pregão', 'Número do Item'])
-                df_itens_gerenciadora.to_csv('df_itens_gerenciadora.csv', sep=';', encoding='utf-8', index=False)
+                df_itens_gerenciadora.to_csv('df_itens.csv', sep=';', encoding='utf-8', index=False)
     
                 print('Dados do pregão obtidos com sucesso.')
             
             except:
-                df_itens_gerenciadora_novo.to_csv('df_itens_gerenciadora.csv', sep=';', encoding='utf-8', index=False)
+                df_itens_gerenciadora_novo.to_csv('df_itens.csv', sep=';', encoding='utf-8', index=False)
                 
 
             opcao_atualizar = input("Gostaria de atualizar o saldo dos itens? \n 1 - Sim \n 2 - Não\n")
@@ -541,7 +544,7 @@ def iniciar():
         elif opcao == "4":
             try:
                 # Carregar o CSV existente
-                df_itens_gerenciadora = pd.read_csv('df_itens_gerenciadora.csv', sep=';', encoding='utf-8')
+                df_itens_gerenciadora = pd.read_csv('df_itens.csv', sep=';', encoding='utf-8')
                 
                 # Exibir os valores únicos da coluna 'Número de Compra'
                 valores_unicos = df_itens_gerenciadora['Número da Compra'].unique()
@@ -562,9 +565,9 @@ def iniciar():
                         df_itens_gerenciadora = df_itens_gerenciadora[df_itens_gerenciadora['Número da Compra'] != valor_escolhido]
 
                         # Salvar o DataFrame atualizado no CSV
-                        df_itens_gerenciadora.to_csv('df_itens_gerenciadora.csv', sep=';', encoding='utf-8', index=False)
+                        df_itens_gerenciadora.to_csv('df_itens.csv', sep=';', encoding='utf-8', index=False)
 
-                        # Atualizando o df_itens_gerenciadora
+                        # Atualizando o df_itens
                         #obter_empenhos_SAG()
                         #calcular_saldo_gerar_arquivo_final()
 
@@ -574,7 +577,7 @@ def iniciar():
                 else:
                     print("Operação de exclusão cancelada.")
             except FileNotFoundError:
-                print("O arquivo 'df_itens_gerenciadora.csv' não foi encontrado.")
+                print("O arquivo 'df_itens.csv' não foi encontrado.")
 
         elif opcao == "5":
             print("Saindo do programa.")
