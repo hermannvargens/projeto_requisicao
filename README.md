@@ -1,4 +1,117 @@
-# Documentação do Usuário
+# Documentação do Arquivo Gerador-de-Requisições.html
+
+## Visão Geral
+O arquivo **Gerador-de-Requisições.html** é uma interface web interativa desenvolvida para facilitar a geração e gerenciamento de requisições de compra. Ele permite aos usuários visualizar produtos, aplicar filtros dinâmicos, calcular valores totais e gerar documentos de requisição automaticamente.
+
+## Estrutura do Arquivo
+O arquivo é composto por três seções principais:
+1. **Cabeçalho (Header)**: Exibe o título, a capacidade de empenho e um campo de busca.
+2. **Filtros (Topbar e Sidebar)**: Contêm opções para filtrar produtos por tipo de compra, número da compra, ano do pregão, UASG, objeto, unidade de fornecimento e fornecedor.
+3. **Lista de Produtos (Main Content)**: Apresenta os produtos em um layout dinâmico, permitindo seleção de quantidade e cálculo automático do total.
+4. **Seção de Requisição (Overlay)**: Mostra um resumo da requisição e gera um documento HTML baseado nas seleções feitas.
+
+## Funcionalidades
+### 1. Filtros Interativos
+- Os filtros são expansíveis e incluem busca por texto em "Fornecedor" e "Objeto".
+- Seleção de filtros atualiza automaticamente a lista de produtos.
+
+### 2. Seleção e Cálculo de Valores
+- Cada produto exibe detalhes como descrição, unidade de fornecimento, valor unitário e capacidade de empenho.
+- O usuário pode selecionar quantidades e visualizar o valor total do item.
+- A soma total da requisição é atualizada automaticamente.
+
+### 3. Geração de Requisição
+- Os itens selecionados são agrupados por fornecedor e unidade.
+- A requisição gerada é formatada automaticamente em HTML.
+- O usuário pode copiar o documento finalizado ou baixá-lo como um arquivo HTML.
+
+## Tecnologias Utilizadas
+- **HTML5**: Estrutura do documento.
+- **CSS3**: Estilização responsiva e temas baseados no padrão Gov.br.
+- **JavaScript**: Lógica para interações dinâmicas, manipulação do DOM e requisição de dados CSV via fetch API.
+
+## Uso
+1. **Abrir o arquivo HTML** no navegador.
+2. **Pesquisar e filtrar produtos** conforme necessidade.
+3. **Selecionar quantidades e revisar valores** da requisição.
+4. **Gerar a requisição** e copiar ou baixar o documento finalizado.
+
+## Possíveis Problemas e Soluções
+### 1. Dados não carregam
+- Verifique a URL do CSV na função `fetchCSVData(url)`, garantindo que o arquivo esteja disponível online.
+
+### 2. Erros de cálculo no total da requisição
+- Certifique-se de que os valores numéricos estão sendo convertidos corretamente no formato brasileiro (ponto para milhar, vírgula para decimal).
+
+### 3. Campos de busca não filtram corretamente
+- Verifique a estrutura do CSV e os identificadores das colunas para garantir a compatibilidade com os filtros aplicados.
+
+## Conclusão
+O **Gerador-de-Requisições.html** é uma ferramenta eficiente para automatizar a gestão de requisições de compra, proporcionando praticidade e precisão no processo. Caso precise de personalizações adicionais, ajustes podem ser feitos nos seletores, estilos e lógica JavaScript.
+
+# Documentação do Arquivo Gerador-de-Requisições - Capacidade de Empenho.html
+
+## Visão Geral
+O arquivo **Gerador-de-Requisições - Capacidade de Empenho.html** é uma interface web destinada ao acompanhamento e gerenciamento da capacidade de empenho de itens. Ele permite a seleção de tipo de compra, número da compra, fornecedor e itens específicos, calculando automaticamente o saldo disponível para empenho.
+
+## Estrutura do Arquivo
+O arquivo HTML é composto pelas seguintes seções:
+1. **Cabeçalho**: Exibe o título "Capacidade de Empenho".
+2. **Filtros**:
+   - Tipo de Compra
+   - Número da Compra
+   - Fornecedor
+   - Itens (CATMAT, Descrição, Valor Unitário, Saldo para Empenho)
+3. **Indicador de Capacidade de Empenho**: Exibe o total acumulado para os itens selecionados.
+4. **Script JavaScript**: Responsável pelo carregamento dinâmico dos dados, filtragem e cálculo dos valores de empenho.
+
+## Funcionalidades
+### 1. Carregamento de Dados via CSV
+- O script busca os dados de um arquivo CSV externo hospedado online.
+- Os dados são processados e apresentados no formato de listas suspensas interativas.
+
+### 2. Filtros Interativos
+- O usuário pode selecionar um ou mais valores para os filtros disponíveis.
+- A seleção de um filtro atualiza automaticamente os demais para exibir apenas opções válidas.
+
+### 3. Cálculo Automático da Capacidade de Empenho
+- Cada item possui um saldo para empenho baseado na fórmula: `Quantidade Disponível * Valor Unitário`.
+- A soma dos valores dos itens selecionados é exibida no topo da página.
+
+### 4. Estilização e Usabilidade
+- A interface é responsiva, com elementos bem espaçados e estilizados para facilitar a leitura.
+- O destaque visual dos campos e valores facilita a interação e análise.
+
+## Tecnologias Utilizadas
+- **HTML5**: Estrutura da interface.
+- **CSS3**: Estilização responsiva e layout organizado.
+- **JavaScript**: Manipulação de dados, interatividade e cálculo dinâmico.
+- **Fetch API**: Carregamento de dados a partir de um arquivo CSV externo.
+
+## Uso
+1. **Abrir o arquivo no navegador**.
+2. **Selecionar filtros conforme necessidade**.
+3. **Visualizar a capacidade de empenho total calculada automaticamente**.
+
+## Possíveis Problemas e Soluções
+### 1. Dados não carregam
+- Verifique a URL do CSV utilizada no script JavaScript.
+- Confirme se o servidor onde o CSV está hospedado está acessível.
+
+### 2. Filtros não exibem opções corretamente
+- Certifique-se de que o CSV segue o formato esperado pelo script.
+- Verifique se os dados carregados contêm valores válidos.
+
+### 3. Cálculo incorreto do saldo de empenho
+- Garanta que os valores de quantidade e valor unitário estão sendo lidos corretamente.
+- Ajuste a função de parseamento do CSV caso os separadores sejam diferentes do esperado.
+
+## Conclusão
+O **Gerador-de-Requisições - Capacidade de Empenho.html** é uma ferramenta eficiente para o acompanhamento da capacidade de empenho, proporcionando uma interface intuitiva e cálculos automáticos para facilitar a tomada de decisão. Caso sejam necessárias personalizações, ajustes podem ser feitos nos seletores, funções de cálculo e layout da página.
+
+
+
+# Documentação do Usuário - app.py
 
 ## Visão Geral
 Este programa automatiza a coleta e o processamento de informações sobre pregões eletrônicos, incluindo a obtenção de dados de itens, fornecedores e valores unitários. Ele também permite a gestão e atualização de saldos dos itens adquiridos.
