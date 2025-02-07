@@ -1,4 +1,4 @@
-# Documentação do Arquivo Gerador-de-Requisições.html
+# 1 - Documentação do Arquivo Gerador-de-Requisições.html
 
 ## Visão Geral
 O arquivo **Gerador-de-Requisições.html** é uma interface web interativa desenvolvida para facilitar a geração e gerenciamento de requisições de compra. Ele permite aos usuários visualizar produtos, aplicar filtros dinâmicos, calcular valores totais e gerar documentos de requisição automaticamente.
@@ -49,7 +49,7 @@ O arquivo é composto por três seções principais:
 ## Conclusão
 O **Gerador-de-Requisições.html** é uma ferramenta eficiente para automatizar a gestão de requisições de compra, proporcionando praticidade e precisão no processo. Caso precise de personalizações adicionais, ajustes podem ser feitos nos seletores, estilos e lógica JavaScript.
 
-# Documentação do Arquivo Gerador-de-Requisições - Capacidade de Empenho.html
+# 2 - Documentação do Arquivo Gerador-de-Requisições - Capacidade de Empenho.html
 
 ## Visão Geral
 O arquivo **Gerador-de-Requisições - Capacidade de Empenho.html** é uma interface web destinada ao acompanhamento e gerenciamento da capacidade de empenho de itens. Ele permite a seleção de tipo de compra, número da compra, fornecedor e itens específicos, calculando automaticamente o saldo disponível para empenho.
@@ -111,7 +111,7 @@ O **Gerador-de-Requisições - Capacidade de Empenho.html** é uma ferramenta ef
 
 
 
-# Documentação do Usuário - app.py
+# 3 - Documentação do Usuário - app.py
 
 ## Visão Geral
 Este programa automatiza a coleta e o processamento de informações sobre pregões eletrônicos, incluindo a obtenção de dados de itens, fornecedores e valores unitários. Ele também permite a gestão e atualização de saldos dos itens adquiridos.
