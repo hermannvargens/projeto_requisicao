@@ -413,7 +413,7 @@
 
     <script>
         document.addEventListener("DOMContentLoaded", function () {
-            const csvUrl = 'https://raw.githubusercontent.com/hermannvargens/projeto_requisicao/refs/heads/main/df_itens_gerenciadora.csv';
+            const csvUrl = 'https://raw.githubusercontent.com/hermannvargens/projeto_requisicao/refs/heads/main/app/df_itens.csv';
 
             let originalData = [];
             let valorTotalRequisicao = 0; // Armazena o valor total da requisição
@@ -491,7 +491,7 @@
                         <p><strong>Número do Item:</strong> ${item["Número do Item"]}</p>
                         <p><strong>Fim da Vigência:</strong> ${item["Fim da Vigência"]}</p>
                         <p><strong>Valor Unitário:</strong> ${formatarValor(item["Val. Unitário"])}</p>
-                        <p><strong>Capacidade de Empenho:</strong>  ${formatarValor(item["Capacidade de Empenho"])}</p>
+                        <p><strong>Capacidade de Empenho:</strong>  ${formatarValor(item["Val. Unitário"]*item["Qtd. Saldo"])}</p>
                         <p><strong>Fornecedor:</strong> ${item["Fornecedor"]}</p>
                         <p><strong>Quantidade:</strong></p>
                         <select class="quantity-select">
@@ -696,12 +696,13 @@
             // Função para calcular a soma da "Capacidade de Empenho" dos itens filtrados
             function calcularCapacidadeEmpenho(filteredData) {
                 const capacidadeTotal = filteredData.reduce((sum, item) => {
-                    const capacidade = parseFloat(item["Capacidade de Empenho"]) || 0; // Captura a capacidade e garante que seja um número
+                    const capacidade = parseFloat(item["Val. Unitário"])*parseFloat(item["Qtd. Saldo"]) || 0; // Captura a capacidade e garante que seja um número
                     return sum + capacidade;
                 }, 0);
                 document.getElementById('capacidade-empenho').textContent = formatarValor(capacidadeTotal.toFixed(2)); // Atualiza o campo com o valor total
             }
 
+            
 
             document.addEventListener("change", function (e) {
                 if (e.target.type === "checkbox") {
