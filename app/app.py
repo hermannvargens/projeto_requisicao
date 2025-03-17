@@ -11,6 +11,7 @@ import math
 import pandas as pd
 import numpy as np
 from modulo_empenho import *
+from datetime import datetime
 
 
 def obter_linhas(n, driver, objeto_pregao, UASG_Gerenciadora, numero_licitacao, ano_licitacao, modalidade_licitacao, fim_vigencia): # n é o total de itens na página
@@ -495,14 +496,30 @@ def iniciar():
             # Opção para exibir os valores únicos de 'Número da Compra'
             try:
                 df_itens_gerenciadora = pd.read_csv('df_itens.csv', sep=';', encoding='utf-8')
-                
-                # Exibir os valores únicos da coluna 'Número da Compra'
+
+                # Exibir os valores únicos da coluna 'Número da Compra' e o respectivo 'Fim da Vigência'
                 valores_unicos = df_itens_gerenciadora['Número da Compra'].unique()
-                print("Números de Compra:")
-                for valor in valores_unicos:
-                    print(valor)
+                print("Números de Compra e Fim da Vigência:")
+                
+                # Obter a data de hoje
+                hoje = datetime.today()
+
+                for idx, valor in enumerate(valores_unicos, start=1):
+                    # Filtrando o DataFrame para obter o 'Fim da Vigência' de cada 'Número da Compra'
+                    fim_vigencia = df_itens_gerenciadora[df_itens_gerenciadora['Número da Compra'] == valor]['Fim da Vigência'].values[0]
+                    
+                    # Converter a data de Fim da Vigência para formato datetime
+                    fim_vigencia_date = datetime.strptime(fim_vigencia, '%d/%m/%Y')  # Ajuste o formato conforme necessário
+                    
+                    # Verificar se a data de Fim da Vigência é maior ou igual a hoje
+                    status = "(Vencido)" if fim_vigencia_date < hoje else ""
+                    
+                    # Exibir a enumeração, Número da Compra e Fim da Vigência
+                    print(f"{idx} -  {valor}, {fim_vigencia} {status}")
+                    
             except FileNotFoundError:
                 print("O arquivo 'df_itens.csv' não foi encontrado.")
+
         
         elif opcao == "3":
             UASG = input("Digite o número da UASG: ")
@@ -546,11 +563,24 @@ def iniciar():
                 # Carregar o CSV existente
                 df_itens_gerenciadora = pd.read_csv('df_itens.csv', sep=';', encoding='utf-8')
                 
-                # Exibir os valores únicos da coluna 'Número de Compra'
+                # Exibir os valores únicos da coluna 'Número da Compra' e o 'Fim da Vigência'
                 valores_unicos = df_itens_gerenciadora['Número da Compra'].unique()
-                print("Valores únicos de 'Número de Compra':")
+                print("Número de Compra e Fim da Vigência:")
+                
+                hoje = datetime.today()
+
                 for i, valor in enumerate(valores_unicos):
-                    print(f"{i + 1} - {valor}")
+                    # Filtrando o DataFrame para obter o 'Fim da Vigência' de cada 'Número da Compra'
+                    fim_vigencia = df_itens_gerenciadora[df_itens_gerenciadora['Número da Compra'] == valor]['Fim da Vigência'].values[0]
+                    
+                    # Converter a data de Fim da Vigência para formato datetime
+                    fim_vigencia_date = datetime.strptime(fim_vigencia, '%d/%m/%Y')  # Ajuste o formato conforme necessário
+                    
+                    # Verificar se a data de Fim da Vigência é menor que hoje
+                    status = "(Vencido)" if fim_vigencia_date < hoje else ""
+                    
+                    # Exibir a enumeração, Número da Compra e Fim da Vigência
+                    print(f"{i + 1} - {valor}, {fim_vigencia} {status}")
                 
                 # Perguntar ao usuário qual valor ele deseja excluir
                 opcao_excluir = input("Digite o número correspondente ao 'Número de Compra' que deseja excluir, ou '0' para cancelar: ")
@@ -571,7 +601,7 @@ def iniciar():
                         #obter_empenhos_SAG()
                         #calcular_saldo_gerar_arquivo_final()
 
-                        print(f"Linhas com 'Número de Compra' = {valor_escolhido} foram excluídas com sucesso.")
+                        print(f"Licitação {valor_escolhido} excluída com sucesso.")
                     except (IndexError, ValueError):
                         print("Opção inválida. Nenhuma linha foi excluída.")
                 else:
