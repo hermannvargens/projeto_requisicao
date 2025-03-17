@@ -6,74 +6,379 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gerador de Requisições</title>
     <style>
-        body {
-            font-family: 'Montserrat', sans-serif;
-            margin: 0;
-            padding: 0;
-        }
+    /* Estilos gerais */
+    body {
+        font-family: 'Montserrat', sans-serif;
+        margin: 0;
+        padding: 0;
+    }
 
-        button {
-            background-color: #28A745;
-            /* Verde Gov.br */
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 1em;
-            transition: background-color 0.3s ease;
-        }
+    button {
+        background-color: #28A745; /* Verde Gov.br */
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 1em;
+        transition: background-color 0.3s ease;
+    }
 
-        button:hover {
-            background-color: #218838;
-            /* Mais escuro ao passar o mouse */
-        }
+    button:hover {
+        background-color: #218838; /* Mais escuro ao passar o mouse */
+    }
 
-        .container {
-            display: flex;
-            flex-direction: column;
-            padding: 20px;
-            /* Adicionar espaçamento conforme estilo do Gov.br */
-        }
+    header {
+        background-color: #007BFF; /* Azul padrão Gov.br */
+        color: white;
+        padding: 10px 20px;
+        text-align: center;
+        box-shadow: 0 4px 2px -2px gray;
+        border-bottom: 1px solid #ccc;
+        position: fixed;
+        width: 100%;
+        z-index: 1000;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
 
-        /* Estilos do header */
-        header {
-            background-color: #007BFF;
-            /* Azul padrão Gov.br */
-            color: white;
-            padding: 10px 20px;
-            text-align: center;
-            box-shadow: 0 4px 2px -2px gray;
-            border-bottom: 1px solid #ccc;
-            position: fixed;
-            width: 100%;
-            z-index: 1000;
-            justify-content: space-between;
-            /* Espaça o conteúdo do header */
-        }
+    .header-container {
+        display: flex;
+        width: 100%;
+        justify-content: space-between;
+        align-items: center;
+    }
 
-        header h1 {
-            margin: 0;
-            font-size: 2em;
-            /* Ajustar conforme o padrão do template Gov.br */
-            flex-grow: 1;
-            /* Permite que o título ocupe o espaço central */
-        }
+    .header-left {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
 
-        .header-actions {
-            display: flex;
-            align-items: center;
-            /* Alinha verticalmente os elementos */
-            gap: 20px;
-            /* Espaçamento entre os itens */
-        }
+    .logo {
+        height: 80px; /* Ajuste o tamanho conforme necessário */
+        margin-bottom: 5px;
+    }
 
-        #go-to-requisition {
-            padding: 10px 20px;
-            font-size: 1em;
-        }
+    .header-left h1 {
+        margin: 0;
+        font-size: 2em;
+    }
 
-        .delete-group-button,
+    .header-left .header-capacity {
+        font-size: 1.2em;
+    }
+
+    .header-center {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+        gap: 20px;
+    }
+
+    .header-search {
+        flex: 1;
+        display: flex;
+        justify-content: flex-end; /* Move a barra de busca para a direita */
+        margin-left: 50px; /* Ajuste conforme necessário */
+    }
+
+    .header-actions {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+    }
+
+    #go-to-requisition {
+        padding: 10px 20px;
+        font-size: 1em;
+    }
+
+    /* Estilos do Topbar */
+    .topbar {
+        background-color: #E9ECEF; /* Cinza claro para contrastar */
+        padding: 10px;
+        border-bottom: 1px solid #ccc;
+        position: fixed;
+        width: 100%;
+        z-index: 1000;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-around;
+        left: 0;
+        margin: 0;
+        align-items: center;
+        margin-top: 50px;
+    }
+
+    .topbar h2 {
+        margin: 0;
+        font-size: 1.2em;
+    }
+
+    /* Estilos de filtros */
+    .filter {
+        box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+        padding: 10px;
+        border-radius: 5px;
+        margin-bottom: 0;
+        color: black;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .filter input[type="text"] {
+        width: 100%;
+        margin-top: 5px;
+        padding: 5px;
+        border: 1px solid #ccc;
+        border-radius: 3px;
+        box-sizing: border-box;
+    }
+
+    .filter h3 {
+        cursor: pointer;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin: 5px 0;
+    }
+
+    .filter .options {
+        padding-left: 10px;
+        margin-top: 5px;
+        text-align: left;
+    }
+
+    .filter .options.hidden {
+        display: none;
+    }
+
+    /* Estilos do conteúdo principal */
+    main {
+        padding: 20px;
+        padding-top: 200px;
+        text-align: center;
+    }
+
+    #Fornecedor, #Objeto, #Unidade\ de\ Fornecimento, #Número\ da\ Compra {
+        max-height: 200px;
+        overflow-y: auto;
+        border: 1px solid #ccc;
+        padding: 5px;
+        width:fit-content;
+    }
+
+    #search-bar {
+        width: 100%;
+        max-width: 500px; /* Ajuste conforme necessário */
+        padding: 8px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+    }
+
+    .header-right {
+        text-align: center;
+    }
+
+    .header-right p {
+        margin: 0;
+        font-size: 1.2em;
+        margin-right:100px;
+        width: 300px;
+    }
+
+    .header-right button {
+        background-color: #28A745;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 1em;
+        margin-top: 10px;
+        margin-right:100px;
+    }
+
+    .header-right button:hover {
+        background-color: #218838;
+    }
+
+    /* Estilos para a lista de produtos */
+    #product-list {
+        display: flex;
+        flex-direction: column;
+        gap: 0px;
+        
+    }
+
+    .product-item {
+        background-color: #f8f9fa;
+        border: 1px solid #dee2e6;
+        border-radius: 5px;
+        padding: 8px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        text-align: justify;
+    }
+
+    .product-item h4 {
+        margin: 0 0 10px;
+        font-size: 1.2em;
+        text-align: center;
+    }
+
+    .product-item p {
+        margin: 5px 0;
+    }
+
+    /* Estilos da grade de produtos */
+    .product-grid {
+        display: grid;
+        grid-template-columns: 8fr 6fr 4fr 0.5fr;
+        gap: 10px;
+        align-items: center;
+        border-bottom: 1px solid #ccc;
+        padding: 0;
+        font-size: 1em;
+    }
+
+    .column {
+        padding: 0px;
+    }
+
+    .column-1 h4 {
+        margin: 0;
+        font-size: 1.2em;
+    }
+
+    .column-4 {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .add-button {
+        width: 60px;
+        height: 60px;
+        font-size: 1.2em;
+        font-weight: bold;
+        background-color: #28A745; /* Verde Gov.br */
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        text-align: center;
+    }
+
+    .add-button:hover {
+        background-color: #218838;
+    }
+
+    /* Estilos para os campos de busca dos filtros Fornecedor e Objeto */
+    .filter .search-input {
+        margin-bottom: 10px;
+        width: 100%;
+        padding: 5px;
+    }
+
+    /* Estilos para a seção sobreposta */
+    .overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.7);
+        display: none;
+        justify-content: center;
+        align-items: center;
+        z-index: 2000;
+    }
+
+    .overlay-content {
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 5px;
+        text-align: center;
+        position: relative;
+        max-height: 80%;
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+
+    .close-overlay {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        cursor: pointer;
+        color: red;
+    }
+
+    .overlay-group-table {
+        width: 100%;
+    }
+
+    .overlay-group-table th,
+    .overlay-group-table td {
+        width: 50px;
+        border: 1px solid #ddd;
+        padding: 8px;
+        text-align: center;
+        word-wrap: break-word;
+    }
+
+    .overlay-group-table th {
+        background-color: #f2f2f2;
+        font-weight: bold;
+    }
+
+    .overlay-group-table tr:nth-child(even) {
+        background-color: #f8f9fa;
+    }
+
+    .overlay-group-table tbody tr:hover {
+        background-color: #ddd;
+    }
+
+    /* Estilos para a exibição da capacidade de empenho */
+    .header-capacity {
+        
+        flex: 1;    
+        justify-content: center;  
+              
+    }
+
+    .header-capacity a {
+        text-decoration: none; /* Remove o sublinhado padrão */
+        color: inherit; /* Mantém a cor do texto padrão */
+    }
+
+    .header-capacity a:visited {
+        text-decoration: none; /* Remove o sublinhado após o clique */
+        color: inherit; /* Mantém a cor padrão */
+    }
+
+
+    /* Estilos gerais para o campo de busca */
+    .search-input {
+        width: 100%;
+        margin-top: 5px;
+        padding: 5px;
+        border: 1px solid #ccc;
+        border-radius: 3px;
+        box-sizing: border-box;
+        transition: opacity 0.3s ease-in-out;
+    }
+
+    .hidden {
+        display: none;
+    }
+
+    .delete-group-button,
         .delete-button {
             background-color: #FF4D4D;
             /* Vermelho */
@@ -94,245 +399,31 @@
             /* Vermelho mais escuro ao passar o mouse */
         }
 
-        .topbar {
-            background-color: #E9ECEF;
-            /* Cinza claro para contrastar */
-            padding: 10px;
-            border-bottom: 1px solid #ccc;
-            position: fixed;
-            width: 100%;
-            z-index: 1000;
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: space-around;
-            left: 0;
-            /* Garante que comece desde o início do lado esquerdo */
-            margin: 0;
-            /* Remove qualquer margem padrão */
-        }
-
-        .topbar h2 {
-            margin: 0;
-            font-size: 1.2em;
-        }
-
-        .filter {
-            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-            padding: 10px;
-            border-radius: 5px;
-            margin-bottom: 20px;
-            color: black;
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
-            /* Alinha os elementos à esquerda */
-        }
-
-        .filter input[type="text"] {
-            width: 100%;
-            /* Garante que o input ocupe toda a largura disponível */
-            margin-top: 5px;
-            /* Espaçamento entre o título e o input */
-            padding: 5px;
-            border: 1px solid #ccc;
-            border-radius: 3px;
-            box-sizing: border-box;
-            /* Garante que o padding não aumente o tamanho do input */
-        }
-
-        .filter h3 {
-            cursor: pointer;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin: 5px 0;
-        }
-
-        .filter .options {
-            padding-left: 10px;
-            margin-top: 5px;
-            text-align: left;
-        }
-
-        .filter .options.hidden {
-            display: none;
-        }
-
-        /* Estilos do conteúdo principal */
-        main {
-            padding: 20px;
-            padding-top: 250px;
-            text-align: center;
-
-        }
-
-        #Fornecedor {
-            max-height: 200px; /* Defina uma altura máxima */
-            overflow-y: auto;  /* Adiciona a barra de rolagem vertical */
-            border: 1px solid #ccc; /* Opcional: adiciona uma borda para delimitar a área */
-            padding: 5px; /* Opcional: adiciona algum espaçamento interno */
-        }
-
-        #Unidade\ de\ Fornecimento {
-            max-height: 200px; /* Define a altura máxima */
-            overflow-y: auto;  /* Adiciona a barra de rolagem vertical */
-            border: 1px solid #ccc; /* Opcional: adiciona uma borda para delimitar a área */
-            padding: 5px; /* Opcional: adiciona espaçamento interno */
-        }
-
-
-
-        #search-bar {
-            margin-bottom: 20px;
-            width: 100%;
-            max-width: 400px;
-            padding: 8px;
-        }
-
-        #product-list {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
-        }
-
-        .product-item {
-            background-color: #f8f9fa;
-            /* Fundo claro com bordas */
-            border: 1px solid #dee2e6;
-            border-radius: 5px;
-            padding: 15px;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-            text-align: justify;
-        }
-
-        .product-item h4 {
-            margin: 0 0 10px;
-            font-size: 1.2em;
-            text-align: center;
-        }
-
-        .product-item p {
-            margin: 5px 0;
-        }
-
-        /* Estilos para os campos de busca dos filtros Fornecedor e Objeto */
-        .filter .search-input {
-            margin-bottom: 10px;
-            width: 100%;
-            padding: 5px;
-        }
-
-        .total-button {
-            margin-top: 10px;
-        }
-
-        /* Estilos para a seção sobreposta */
-        .overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.7);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 2000;
-        }
-
-        .overlay-content {
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 5px;
-            text-align: center;
-            position: relative;
-            /* Permite posicionamento absoluto dos filhos */
-            max-height: 80%;
-            /* Limite máximo da altura */
-            overflow-y: auto;
-            /* Adiciona rolagem vertical quando necessário */
-            overflow-x: hidden;
-            /* Esconde rolagem horizontal se não for necessária */
-        }
-
-        .close-overlay {
-            position: absolute;
-            /* Posiciona o elemento em relação ao seu contêiner */
-            top: 10px;
-            /* Distância do topo */
-            right: 10px;
-            /* Distância da direita */
-            cursor: pointer;
-            /* Aponta que é interativo */
-            color: red
-                /* Cor do texto */
-        }
-
-        .overlay-group-table {
-            /* Define que a tabela tenha larguras fixas */
-            width: 100%;
-            /* Garante que a tabela ocupe toda a largura disponível */
-        }
-
-        .overlay-group-table th,
-        .overlay-group-table td {
-            width: 50px;
-            /* Define uma largura fixa para todas as colunas */
-            border: 1px solid #ddd;
-            /* Adiciona borda às células */
-            padding: 8px;
-            /* Adiciona espaçamento dentro das células */
-            text-align: center;
-            /* Alinhamento do texto nas células */
-            word-wrap: break-word;
-            /* Quebra o texto se ultrapassar a largura da célula */
-        }
-
-        .overlay-group-table th {
-            background-color: #f2f2f2;
-            /* Cor de fundo dos cabeçalhos da tabela */
-            font-weight: bold;
-        }
-
-        .overlay-group-table tr:nth-child(even) {
-            background-color: #f8f9fa;
-        }
-
-        .overlay-group-table tbody tr:hover {
-            background-color: #ddd;
-            /* Destaque para a linha ao passar o mouse */
-        }
-
-        #search-bar {
-            margin-bottom: 20px;
-            width: 100%;
-            max-width: 400px;
-            padding: 8px;
-            margin-left: auto;
-            /* Empurra a barra de pesquisa para o lado direito */
-        }
-
-        .header-capacity {
-            text-align: center;
-            margin-bottom: 10px;
-            font-size: 1.2em;
-            
-        }
-
     </style>
+
 </head>
 
 <body>
     <header>
-        <h1>Gerador de Requisições</h1>
-        <div class="header-capacity">
-            <p><strong><a href="http://intranet.pqrmnt5.eb.mil.br/requisicoes/Gerador-de-Requisicoes - Capacidade de Empenho.html" target="_blank">Capacidade de Empenho</a>:</strong> <span id="capacidade-empenho">0.00</span></p>
-
-        </div>
-        <div class="header-actions">
-            <button id="go-to-requisition">Ir para Requisição</button>
-            <p><strong>Valor da Requisição:</strong> R$ <span id="total-requisicao">0,00</span></p>
-            <input type="text" id="search-bar" placeholder="Buscar por Descrição Detalhada...">
+        <div class="header-container">
+            <div class="header-left">
+                <img src="logo.png" alt="Logo da aplicação" class="logo">
+                
+            </div>
+            <div class="header-center">
+                <div class="header-search">
+                    <input type="text" id="search-bar" placeholder="Buscar por Descrição Detalhada...">
+                </div>
+                <div class="header-capacity">
+                    <p><strong><a href="http://intranet.pqrmnt5.eb.mil.br/requisicoes/Gerador-de-Requisicoes - Capacidade de Empenho.html" target="_blank">CAPACIDADE DE EMPENHO</a></strong></p> 
+                    <p><span id="capacidade-empenho">0.00</span></p>
+                </div>
+            </div>
+            
+            <div class="header-right">
+                <p><strong>Valor da Requisição:</strong> R$ <span id="total-requisicao">0,00</span></p>
+                <button id="go-to-requisition">Ir para Requisição</button>
+            </div>
         </div>
 
         <div class="container">
@@ -343,10 +434,11 @@
                     <div class="options hidden" id="Tipo de Compra"></div>
                 </div>
                 <div class="filter">
-                    <h3 class="toggle-header" data-column="Número da Compra">Número da Compra <span
-                            class="toggle-btn">+</span></h3>
+                    <h3 class="toggle-header" data-column="Número da Compra">Número da Compra <span class="toggle-btn">+</span></h3>
+                    <input type="text" class="search-input hidden" placeholder="Buscar Número da Compra..." id="numero-compra-search">
                     <div class="options hidden" id="Número da Compra"></div>
                 </div>
+                              
                 <div class="filter">
                     <h3 class="toggle-header" data-column="Ano do Pregão">Ano do Pregão <span
                             class="toggle-btn">+</span></h3>
@@ -377,9 +469,6 @@
 
     </header>
     <main>
-        <br>
-        <br>
-
         <div id="product-list"></div>
     </main>
 
@@ -403,9 +492,7 @@
         </div>
         <div id="overlay-container">
             <div id="overlay-items-list"></div>
-
         </div>
-
     </div>
 
 
@@ -468,11 +555,6 @@
                 return valorFloat.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
             }
 
-
-
-
-
-
             function displayProducts(data) {
                 const productList = document.getElementById("product-list");
                 productList.innerHTML = '';
@@ -484,30 +566,50 @@
                     productItem.className = "product-item";
 
                     productItem.innerHTML = `
-                        <h4>${item["Descrição"]}</h4>
-                        <p><strong>Descrição Detalhada:</strong> ${item["Descrição Detalhada"]}</p>
-                        <p><strong>Unidade de Fornecimento:</strong> ${item["Unidade de Fornecimento"]}</p>
-                        <p><strong>Número da Compra:</strong> ${item["Número da Compra"]}</p>
-                        <p><strong>Número do Item:</strong> ${item["Número do Item"]}</p>
-                        <p><strong>Fim da Vigência:</strong> ${item["Fim da Vigência"]}</p>
-                        <p><strong>Valor Unitário:</strong> ${formatarValor(item["Val. Unitário"])}</p>
-                        <p><strong>Capacidade de Empenho:</strong>  ${formatarValor(item["Val. Unitário"]*item["Qtd. Saldo"])}</p>
-                        <p><strong>Fornecedor:</strong> ${item["Fornecedor"]}</p>
-                        <p><strong>Quantidade:</strong></p>
-                        <select class="quantity-select">
-                            ${Array.from({ length: maxQtdSaldo + 1 }, (_, i) => `<option value="${i}">${i}</option>`).join('')}
-                        </select>
-                        <p><strong>Valor Total do Item:</strong> <span class="total-value">R$ 0,00</span></p>
-                        <button class="add-button total-button">Adicionar à Requisição</button>
+                        <div class="product-grid">
+                            <div class="column column-1">
+                                <h4>${item["Descrição"]}</h4>
+                                <p><strong>Descrição Detalhada:</strong> ${item["Descrição Detalhada"]}</p>
+                            </div>
+                            <div class="column column-2">
+                                <p><strong>Número da Compra:</strong> ${item["Número da Compra"]}</p>
+                                <p><strong>Número do Item:</strong> ${item["Número do Item"]}</p>
+                                <p><strong>Unidade de Fornecimento:</strong> ${item["Unidade de Fornecimento"]}</p>
+                                <p><strong>Valor Unitário:</strong> ${formatarValor(item["Val. Unitário"])}</p>
+                                <p><strong>Fornecedor:</strong> ${item["Fornecedor"]}</p>
+                            </div>
+                            <div class="column column-3">
+                                <p><strong>Fim da Vigência:</strong> ${item["Fim da Vigência"]}</p>
+                                <p><strong>Capacidade de Empenho:</strong> ${formatarValor(item["Val. Unitário"] * item["Qtd. Saldo"])}</p>
+                                <p><strong>Saldo para Empenho:</strong> ${maxQtdSaldo}</p>
+                                <p><strong>Quantidade:</strong>
+                                    <input type="number" class="quantity-input" min="0" max="${maxQtdSaldo}" value="0">
+                                </p>
+                                <p><strong>Valor Total do Item:</strong> <span class="total-value">R$ 0,00</span></p>
+                            </div>
+                            <div class="column column-4">
+                                <button class="add-button">+</button>
+                            </div>
+                        </div>
                     `;
 
-                    const selectElement = productItem.querySelector('.quantity-select');
+
+
+                    const inputElement = productItem.querySelector('.quantity-input');
                     const totalValueElement = productItem.querySelector('.total-value');
                     const addButton = productItem.querySelector('.add-button');
 
                     // Atualiza o valor total sempre que a quantidade é alterada
-                    selectElement.addEventListener('change', function () {
+                    inputElement.addEventListener('input', function () {
                         const selectedQuantity = parseInt(this.value, 10);
+                        if (isNaN(selectedQuantity) || selectedQuantity < 0) {
+                            selectedQuantity = 0;
+                            this.value = 0;
+                        }
+                        if (selectedQuantity > maxQtdSaldo) {
+                            selectedQuantity = maxQtdSaldo;
+                            this.value = 0
+                        }
                         const unitValue = parseFloat(item["Val. Unitário"].replace(",", "."));
                         const totalValue = (selectedQuantity * unitValue).toFixed(2);
                         totalValueElement.textContent = formatarValor(totalValue);
@@ -515,9 +617,10 @@
 
 
 
+
                     addButton.addEventListener('click', () => {
                         const maxQtdSaldo = parseInt(item["Qtd. Saldo"], 10);
-                        const selectedQuantity = parseInt(selectElement.value, 10);
+                        const selectedQuantity = parseInt(inputElement.value, 10);
 
                         if (selectedQuantity > 0) {
                             const unit = item["Unidade"];
@@ -585,9 +688,9 @@
                                 <td>R$ ${parseFloat(item["Val. Unitário"]).toFixed(2).replace(".", ",")}</td>
    
                                 <td>
-                                    <select class="overlay-quantity-select">
-                                        ${Array.from({ length: maxQtdSaldo + 1 }, (_, i) => `<option value="${i}" ${i === selectedQuantity ? 'selected' : ''}>${i}</option>`).join('')}
-                                    </select>
+                                <input type="number" class="overlay-quantity-select" min="0" max="${maxQtdSaldo}" value="${selectedQuantity}">
+
+                                    
                                 </td>
                                 <td class="total-item-value">R$ ${totalValue}</td>
                                 <td>${item["Unidade de Fornecimento"]}</td>
@@ -602,8 +705,6 @@
                                 newItemRow.remove();
                                 updateTotalRequisicao();
                                 updateEmpenhoTotal(groupContainer);
-                                
-                                
                             });
 
                             // Função para atualizar o valor total quando a quantidade muda
@@ -661,37 +762,53 @@
 
             function applyFilters(data) {
                 const filterColumns = ["Tipo de Compra", "Número da Compra", "Ano do Pregão", "UASG", "Objeto", "Unidade de Fornecimento", "Fornecedor"];
-                const searchTerm = document.getElementById("search-bar").value.toLowerCase();
+                const searchTerm = document.getElementById("search-bar").value.trim().toLowerCase(); 
+
+                // Capturar os checkboxes uma única vez
+                const activeFilters = {};
+                filterColumns.forEach(column => {
+                    const selectedValues = Array.from(document.querySelectorAll(`input[name="${column}"]:checked`))
+                        .map(box => box.value);
+                    if (selectedValues.length > 0) {
+                        activeFilters[column] = new Set(selectedValues); // Usa Set para buscas rápidas
+                    }
+                });
 
                 return data.filter(item => {
-                    const matchesSearch = item["Descrição Detalhada"].toLowerCase().includes(searchTerm);
+                    // Otimização: Fazer a comparação apenas se houver termos filtrados
+                    if (searchTerm && !item["Descrição Detalhada"].toLowerCase().includes(searchTerm)) {
+                        return false;
+                    }
 
-                    const matchesFilters = filterColumns.every(column => {
-                        const checkedBoxes = Array.from(document.querySelectorAll(`input[name="${column}"]:checked`));
-                        if (checkedBoxes.length === 0) return true;
-                        return checkedBoxes.some(box => box.value === item[column]);
-                    });
+                    // Otimização: Iterar apenas sobre os filtros ativos
+                    for (const column in activeFilters) {
+                        if (!activeFilters[column].has(item[column])) {
+                            return false;
+                        }
+                    }
 
-                    return matchesSearch && matchesFilters;
+                    return true;
                 });
             }
+
 
             document.querySelectorAll(".toggle-header").forEach(header => {
                 header.addEventListener("click", function () {
                     const column = header.dataset.column;
                     const optionsContainer = document.getElementById(column);
-                    const searchInput = document.getElementById(`${column.toLowerCase()}-search`);
+                    const searchInput = document.getElementById(`${column.replace(/\s/g, '-').toLowerCase()}-search`);
                     const toggleBtn = header.querySelector(".toggle-btn");
 
                     optionsContainer.classList.toggle("hidden");
                     toggleBtn.textContent = optionsContainer.classList.contains("hidden") ? "+" : "-";
 
-                    // Mostrar campo de busca apenas no filtro Fornecedor e Objeto
+                    // Mostrar/ocultar a barra de pesquisa apenas para "Número da Compra"
                     if (searchInput) {
                         searchInput.classList.toggle("hidden");
                     }
                 });
             });
+
 
             // Função para calcular a soma da "Capacidade de Empenho" dos itens filtrados
             function calcularCapacidadeEmpenho(filteredData) {
@@ -717,6 +834,17 @@
                 displayProducts(filteredData);
                 calcularCapacidadeEmpenho(filteredData); 
             });
+
+            document.getElementById("numero-compra-search").addEventListener("input", function () {
+                const searchTerm = this.value.toLowerCase();
+                const checkboxes = document.querySelectorAll("#Número\\ da\\ Compra input[type='checkbox']");
+
+                checkboxes.forEach(checkbox => {
+                    const label = checkbox.nextElementSibling.textContent.toLowerCase();
+                    checkbox.parentElement.style.display = label.includes(searchTerm) ? "block" : "none";
+                });
+            });
+
 
             document.getElementById("fornecedor-search").addEventListener("input", function () {
                 const searchTerm = this.value.toLowerCase();
