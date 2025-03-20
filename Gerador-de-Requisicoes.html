@@ -57,7 +57,7 @@
     }
 
     .logo {
-        height: 80px; /* Ajuste o tamanho conforme necessário */
+        height: 90px; /* Ajuste o tamanho conforme necessário */
         margin-bottom: 5px;
     }
 
@@ -399,11 +399,83 @@
             /* Vermelho mais escuro ao passar o mouse */
         }
 
+        /* Estilos para a sobreposição de boas-vindas */
+        .welcome-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 3000;
+        }
+
+        .welcome-content {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: left;
+            max-width: 80%;
+            
+        }
+
+        .close-welcome {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
     </style>
 
 </head>
 
 <body>
+
+    <!-- Seção sobreposta de Boas-Vindas -->
+    <div class="welcome-overlay" id="welcomeOverlay">
+        <div class="welcome-content">
+            <h2 style="text-align: center;">Bem-vindo ao Gerador de Requisições</h2>
+            <p>Este sistema permite a geração e organização de requisições de compras, e também verificar a Capacidade de Empenho.</p>
+            <p>Utilize os filtros disponíveis para encontrar os itens desejados e adicione-os à sua requisição.</p>
+            <p>Utilize também a barra de busca, para palavras na Descrição Detalhada.</p>
+            <p>Caso queira alterar a quantidade de algum item, ou mesmo excluí-lo, clique no botão "Ir para Requisição",
+            para ir para o Resumo da Requisição.</p>
+            <p>Ao finalizar, clique no botão "Finalizar Requisição". A requisição será copiada automaticamente.</p>
+            <p>Acesse o SPED, crie um novo Diex, ou clone um Diex. No Corpo do Texto, clique em "Código Fonte".</p>
+            
+            
+                <img src="sped.png" alt="Clicar em Código Fonte no corpo do Diex" height="300" >
+            
+            
+            <p>Apague o conteúdo, se houver, e pressione CTRL+V para colar a Requisição feita no Gerador de Requisições.</p>
+            <p>Em seguida, clique de novo em "Código Fonte" para voltar ao modo normal de ediçao de Diex.</p>
+
+            <h3 style="text-align: center;">Capacidade de Empenho</h3>           
+            <p> O valor da Capacidade de Empenho refere-se sempre aos itens mostrados em tela. Então, cada filtragem pode alterar esse valor.</p>
+            
+
+            <h3 style="text-align: center;">Limitações:</h3>
+            <p>- Os filtros são fixos. Assim, quando um filtro é utilizado, os demais apresentarão as mesmas informações inicias, ou seja, um filtro não filtra outro filtro.</p>
+            <p>- Se o mesmo item, da mesma compra for adicionado mais de uma vez, esse item aparecerá repetido na seção de "Resumo da Requisição", sendo necessário o ajuste.</p>
+            <p>- O valor da Capacidade de Empenho e do Saldo de Itens para Empenho pode estar desatualizado, pois sua atualização é manual e depende do SAG. Na dúvida, esclareça na SALC</p>
+            <p>- A Data de Fim da Vigência é uma data estimada para a maioria dos itens da licitação. Na dúvida, pergunte a SALC.</p>
+            
+            <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; ">
+                <button class="close-welcome" onclick="closeWelcomeOverlay()" style="padding: 10px 20px; font-size: 16px;">Entendi</button>
+            </div>
+              
+           
+        </div>
+
+    </div>
+
     <header>
         <div class="header-container">
             <div class="header-left">
@@ -435,13 +507,12 @@
                 </div>
                 <div class="filter">
                     <h3 class="toggle-header" data-column="Número da Compra">Número da Compra <span class="toggle-btn">+</span></h3>
-                    <input type="text" class="search-input hidden" placeholder="Buscar Número da Compra..." id="numero-compra-search">
+                    <input type="text"  class="options hidden" placeholder="Buscar Número da Compra..." id="numero-compra-search">                    
                     <div class="options hidden" id="Número da Compra"></div>
                 </div>
                               
                 <div class="filter">
-                    <h3 class="toggle-header" data-column="Ano do Pregão">Ano do Pregão <span
-                            class="toggle-btn">+</span></h3>
+                    <h3 class="toggle-header" data-column="Ano do Pregão">Ano do Pregão <span class="toggle-btn">+</span></h3>
                     <div class="options hidden" id="Ano do Pregão"></div>
                 </div>
                 <div class="filter">
@@ -495,10 +566,12 @@
         </div>
     </div>
 
-
-    </div>
-
     <script>
+
+        function closeWelcomeOverlay() {
+                    document.getElementById("welcomeOverlay").style.display = "none";
+                }
+
         document.addEventListener("DOMContentLoaded", function () {
             const csvUrl = 'https://raw.githubusercontent.com/hermannvargens/projeto_requisicao/refs/heads/main/app/df_itens.csv';
 
